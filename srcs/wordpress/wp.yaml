@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wp-svc
+  annotations:
+    metallb.universe.tf/allow-shared-ip: default
+spec:
+  selector:
+    app: wpordpress
+  type: LoadBalancer
+  ports:
+    - name: five-five
+      protocol: TCP
+      port: 5050
+      targetPort: 5050
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wp-deployment
+  labels:
+    app: wpordpress
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wpordpress
+  template:
+    metadata:
+      labels:
+        app: wpordpress
+    spec:
+      containers:
+      - name: wpordpress
+        image: wp-image
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 5050
